@@ -1,0 +1,3 @@
+This is a placeholder file.  It is here because Git ignores empty folders.
+
+Once you have added a Test class to your project you no longer need this file, and can safely delete it.
