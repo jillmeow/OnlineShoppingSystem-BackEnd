@@ -19,12 +19,12 @@ public class ProductJdbcDao implements ProductDAO {
         try (
             //get connection to database
             Connection connection = JdbcConnection.getConnection();
-  
+            
             //create the SQL statement
             PreparedStatement stmt = connection.prepareStatement(
                 "merge into products (productid,name,description,category,price,quantity) values (?,?,?,?,?,?)");
         ) {
-
+            
             //copy the data from the student domain object into the statement
             stmt.setString(1, product.getProductID());
             stmt.setString(2, product.getName());

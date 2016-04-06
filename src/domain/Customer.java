@@ -5,7 +5,7 @@
 package domain;
 
 import java.util.Objects;
-import org.hibernate.validator.constraints.NotBlank;
+import net.sf.oval.constraint.*;
 
 /**
  *

@@ -6,16 +6,13 @@ package gui;
 
 import dao.*;
 import domain.Product;
-import gui.helpers.SimpleListModel;
+import gui.helpers.*;
 import java.text.DecimalFormat;
 import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+
 
 /**
  *
@@ -24,6 +21,7 @@ import javax.validation.ValidatorFactory;
 public class ProductDialog extends javax.swing.JDialog {
    private ProductDAO plist;
    private Product product = new Product();
+   private ValidationHelper validHelp = new ValidationHelper();
    /**
     * Creates new form ProductEditor
     */
@@ -241,43 +239,26 @@ public class ProductDialog extends javax.swing.JDialog {
 
    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
       try{
+      
+      if((plist.getById(idField.getText()) != null) && idField.isEditable()){
+            JOptionPane.showMessageDialog(this, "This ID already exists, please enter a non-existing ID");
+      } else {    
       product.setProductID(idField.getText());
       product.setName(nameField.getText());
       product.setDescription(descriptionField.getText());
       product.setCategory((String) cmbCategory.getSelectedItem());
       product.setPrice((Double)priceField.getValue());
       product.setQuantity((Integer)quantityField.getValue());
-
-      // create the validator factory
-      ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-
-      // get a validator from the factory
-      Validator validator = factory.getValidator();
-
-      Set<ConstraintViolation<Product>> constraintViolations = validator.validate(product);
-
-      // check if any constraints were violated
-          if (!constraintViolations.isEmpty()) {
-             StringBuilder message = new StringBuilder();
-
-      // loop through the violations extracting the message for each
-             for (ConstraintViolation<Product> violation : constraintViolations) {
-                message.append(violation.getMessage()).append("\n");
-             }
-
-             // show a message box do the user with all the messages
-             JOptionPane.showMessageDialog(this, message.toString(), 
-               "Input Problem", JOptionPane.WARNING_MESSAGE);
-
-             // exit the save method, since the data is not valid
-             return;
-          }
-        
-      plist.save(product);
+      
+      if(validHelp.isObjectValid(product)){
+          plist.save(product);
+          this.dispose();
+      }
+      };
       }catch(DAOException e){
           throw new DAOException(e.getMessage(), e);
       }
-      this.dispose();
+      //this.dispose();
       
    }//GEN-LAST:event_btnSaveActionPerformed
 
