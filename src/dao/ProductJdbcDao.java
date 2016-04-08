@@ -18,11 +18,11 @@ public class ProductJdbcDao implements ProductDAO {
     public void save(Product product) {
         try (
             //get connection to database
-            Connection connection = JdbcConnection.getConnection();
+            Connection connection = JdbcConnection.go();
             
             //create the SQL statement
             PreparedStatement stmt = connection.prepareStatement(
-                "merge into products (productid,name,description,category,price,quantity) values (?,?,?,?,?,?)");
+                "insert into Products (productid,name,description,category,price,quantity) values (?,?,?,?,?,?) on duplicate key update name=values(name), description=values(description), category=values(category), price=values(price), quantity=values(quantity)");
         ) {
             
             //copy the data from the student domain object into the statement
@@ -42,9 +42,9 @@ public class ProductJdbcDao implements ProductDAO {
     @Override
     public void delete(Product product) {
         try(
-          Connection connection = JdbcConnection.getConnection();
+          Connection connection = JdbcConnection.go();
           PreparedStatement stmt = connection.prepareStatement(
-                  "delete from products where productid = ?");
+                  "delete from Products where productid = ?");
           ) {
          stmt.setString(1, product.getProductID());
          stmt.executeUpdate();
@@ -56,9 +56,9 @@ public class ProductJdbcDao implements ProductDAO {
     @Override
     public Collection<Product> getAll() {
         try(
-          Connection connection = JdbcConnection.getConnection();
+          Connection connection = JdbcConnection.go();
           PreparedStatement stmt = connection.prepareStatement(
-                  "select * from products order by productid");
+                  "select * from Products order by productid");
           ResultSet rs = stmt.executeQuery();
           ){
          Collection<Product> products = new ArrayList<>();
@@ -83,9 +83,9 @@ public class ProductJdbcDao implements ProductDAO {
     @Override
     public Collection<String> getAllCategories() {
         try(
-          Connection connection = JdbcConnection.getConnection();
+          Connection connection = JdbcConnection.go();
           PreparedStatement stmt = connection.prepareStatement(
-                  "select distinct category from products order by category");
+                  "select distinct category from Products order by category");
           ResultSet rs = stmt.executeQuery();
           ){
          Collection<String> categories = new ArrayList<>();
@@ -104,9 +104,9 @@ public class ProductJdbcDao implements ProductDAO {
     @Override
     public Product getById(String productId) {
         try{
-          Connection connection = JdbcConnection.getConnection();
+          Connection connection = JdbcConnection.go();
           PreparedStatement stmt = connection.prepareStatement(
-                  "select * from products where productid=?");
+                  "select * from Products where productid=?");
               stmt.setString(1, productId);
           ResultSet rs = stmt.executeQuery();
          
@@ -131,9 +131,9 @@ public class ProductJdbcDao implements ProductDAO {
     @Override
     public Collection<Product> getByCategory(String category) {
          try(
-          Connection connection = JdbcConnection.getConnection();
+          Connection connection = JdbcConnection.go();
           PreparedStatement stmt = connection.prepareStatement(
-                  "select * from products where category = ? order by productid");
+                  "select * from Products where category = ? order by productid");
           ){
             stmt.setString(1, category);
             ResultSet rs = stmt.executeQuery();            
